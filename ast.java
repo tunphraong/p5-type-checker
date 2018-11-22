@@ -140,7 +140,8 @@ class ProgramNode extends ASTnode {
      * typeCheck
      */
     public void typeCheck() {
-	// TODO: Implement a type checking method for this node and its children.
+    // TODO: Implement a type checking method for this node and its children.
+        declList.typeCheck();
     }
     
     public void unparse(PrintWriter p, int indent) {
@@ -178,7 +179,19 @@ class DeclListNode extends ASTnode {
                 node.nameAnalysis(symTab);
             }
         }
-    }    
+    }
+
+    public boolean typeCheck() {
+        boolean result = true;
+        for (DeclNode node : decls) {
+            if (node instanceof FnDeclNode) {
+                if(((FnDeclNode)node).typeCheck() == false) {
+                    result = false;
+                } 
+            }
+            else continue;
+        }
+    }
     
     public void unparse(PrintWriter p, int indent) {
         Iterator it = decls.iterator();
@@ -247,6 +260,11 @@ class FnBodyNode extends ASTnode {
         this.stmtList = stmtList;
     }
 
+    // check right side of statement's list
+    public boolean typeCheck(TypeNode rTypeNode){
+        return stmtList.typeCheck(rTypeNode);
+        }
+
     /**
      * nameAnalysis
      * Given a symbol table symTab, do:
@@ -282,6 +300,16 @@ class StmtListNode extends ASTnode {
             node.nameAnalysis(symTab);
         }
     }    
+
+    public boolean typeCheck(TypeNode rTypeNode) {
+        boolean result = false;
+        for (StmtNode node : stmts) {
+            if (node.typeCheck(rTypeNode) == false) {
+                result = false; // if one of them is false, the rest should be false
+            }
+        }
+        return result;
+    }
     
     public void unparse(PrintWriter p, int indent) {
         Iterator<StmtNode> it = stmts.iterator();
