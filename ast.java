@@ -814,7 +814,7 @@ class AssignStmtNode extends StmtNode {
     
     /**
      * nameAnalysis
-     * Given a symbol table symTab, perform name analysis on this node's child
+     * Given a symbo==l table symTab, perform name analysis on this node's child
      */
     public void nameAnalysis(SymTable symTab) {
         assign.nameAnalysis(symTab);
@@ -929,7 +929,29 @@ class ReadStmtNode extends StmtNode {
      */
     public void nameAnalysis(SymTable symTab) {
         exp.nameAnalysis(symTab);
-    }    
+    }
+    
+    public boolean typeCheck(TypeNode r) {
+        Type t = exp.typeCheck();
+        IdNode id = exp.getExpIdNode();
+        if (t instanceof ErrorType) {
+            return false;
+        }
+        if (t instanceof FnType) {
+            id.outputError("Attempt to read a function");
+            return false;
+        }
+        if (t instanceof StructType) {
+            id.outputError("Attempt to read a struct name");
+            return false;
+        }
+        if (t instanceof StructDefType) {
+            id.outputError("Attempt to read a struct variable");
+            return false;
+        }
+
+        return true;
+    }
     
     public void unparse(PrintWriter p, int indent) {
         printSpace(p, indent);
