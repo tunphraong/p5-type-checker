@@ -937,14 +937,18 @@ class ReadStmtNode extends StmtNode {
         if (t instanceof ErrorType) {
             return false;
         }
+        // Reading a function: e.g., "cin >> f", where f is a function name. 
         if (t instanceof FnType) {
             id.outputError("Attempt to read a function");
             return false;
         }
+        //  Reading a struct name; e.g., "cin >> P", where P is the name of a struct type. 
         if (t instanceof StructType) {
             id.outputError("Attempt to read a struct name");
             return false;
         }
+        // Reading a struct variable; e.g., "cin >> p", 
+        // where p is a variable declared to be of a struct type. 
         if (t instanceof StructDefType) {
             id.outputError("Attempt to read a struct variable");
             return false;
@@ -969,12 +973,49 @@ class WriteStmtNode extends StmtNode {
         this.exp = exp;
     }
 
+    public boolean typeCheck () {
+
+    }
+
     /**
      * nameAnalysis
      * Given a symbol table symTab, perform name analysis on this node's child
      */
     public void nameAnalysis(SymTable symTab) {
         exp.nameAnalysis(symTab);
+    }
+
+    public boolean typeCheck(TypeNode r) {
+        Type t = exp.typeCheck();
+        IdNode id = exp.getExpIdNode();
+        if (t instanceof ErrorType) {
+            return false;
+        }
+        //  Writing a function; e.g., "cout << f", where f is a function name. 
+        if (t instanceof FnType) {
+            id.outputError("Attempt to write a function ");
+            return false;
+        }
+        //  Writing a struct name; e.g., "cout << P", where P is the name of a struct type. 
+        if (t instanceof StructType) {
+            id.outputError("Attempt to write a struct name");
+            return false;
+        }
+        // Writing a struct variable; e.g., "cout << p", 
+        // where p is a variable declared to be of a struct type. 
+        if (t instanceof StructDefType){
+            id.outputError("Attempt to write a struct variable");
+            return false;
+        }
+        // Writing a void value (note: this can only happen if
+        // there is an attempt to write the return value 
+        //from a void function); e.g., "cout << f()", 
+        // where f is a void function. 
+        if (t instanceof VoidType) {
+            id.outputError("Attempt to write void ");
+            return false;
+        }
+        return true;
     }
     
     public void unparse(PrintWriter p, int indent) {
