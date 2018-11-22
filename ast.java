@@ -191,6 +191,7 @@ class DeclListNode extends ASTnode {
             }
             else continue;
         }
+        return result;
     }
     
     public void unparse(PrintWriter p, int indent) {
@@ -263,7 +264,7 @@ class FnBodyNode extends ASTnode {
     // check right side of statement's list
     public boolean typeCheck(TypeNode rTypeNode){
         return stmtList.typeCheck(rTypeNode);
-        }
+    }
 
     /**
      * nameAnalysis
@@ -336,6 +337,10 @@ class ExpListNode extends ASTnode {
             node.nameAnalysis(symTab);
         }
     }
+
+    public List<ExpNode> getExpNode() {
+        return exps;
+    }
     
     public void unparse(PrintWriter p, int indent) {
         Iterator<ExpNode> it = exps.iterator();
@@ -369,6 +374,8 @@ class VarDeclNode extends DeclNode {
         this.id = id;
         this.size = size;
     }
+
+    // no need to do typeCheck for VarDeclNode
 
     /**
      * nameAnalysis (overloaded)
@@ -538,8 +545,16 @@ class FnDeclNode extends DeclNode {
             System.exit(-1);
         }
         
+        
         return null;
     }    
+
+    // typeCheck for fnBodyNode
+    // 
+    public boolean typeCheck() {
+        TypeNode rTypeNode = type;
+        return  fnBody.typeCheck(rTypeNode);
+    }
     
     public void unparse(PrintWriter p, int indent) {
         printSpace(p, indent);
@@ -783,6 +798,9 @@ class StructNode extends TypeNode {
 
 abstract class StmtNode extends ASTnode {
     abstract public void nameAnalysis(SymTable symTab);
+    public boolean typeCheck(TypeNode rTypeNode) {
+        return false;
+    }
 }
 
 class AssignStmtNode extends StmtNode {
@@ -790,6 +808,7 @@ class AssignStmtNode extends StmtNode {
         this.assign = assign;
     }
 
+    
     /**
      * nameAnalysis
      * Given a symbol table symTab, perform name analysis on this node's child
@@ -797,6 +816,8 @@ class AssignStmtNode extends StmtNode {
     public void nameAnalysis(SymTable symTab) {
         assign.nameAnalysis(symTab);
     }
+
+   
     
     public void unparse(PrintWriter p, int indent) {
         printSpace(p, indent);
