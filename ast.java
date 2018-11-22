@@ -1,6 +1,9 @@
 import java.io.*;
 import java.util.*;
 
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.IntType;
+import com.sun.tools.javac.code.Type.ErrorType;
+
 // **********************************************************************
 // The ASTnode class defines the nodes of the abstract-syntax tree that
 // represents a Cdull program.
@@ -817,6 +820,14 @@ class AssignStmtNode extends StmtNode {
         assign.nameAnalysis(symTab);
     }
 
+    public boolean typeCheck(TypeNode r) {
+        Type t = assign.typeCheck();
+        if( t instanceof ErrorType)
+            return false;
+        else
+            return true;
+    }
+
    
     
     public void unparse(PrintWriter p, int indent) {
@@ -841,6 +852,22 @@ class PostIncStmtNode extends StmtNode {
     public void nameAnalysis(SymTable symTab) {
         exp.nameAnalysis(symTab);
     }
+
+    public boolean typeCheck(TypeNode r) {
+        Type t = exp.typeCheck();
+        IdNode id = exp.getExpIdNode();
+        if (t instanceof ErrorType) {
+            return false;
+        }
+
+        if (!(t instanceof IntType)) {
+            id.outputError("Arithmetic operator applied to non-numeric operand");
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
     
     public void unparse(PrintWriter p, int indent) {
         printSpace(p, indent);
@@ -855,6 +882,22 @@ class PostIncStmtNode extends StmtNode {
 class PostDecStmtNode extends StmtNode {
     public PostDecStmtNode(ExpNode exp) {
         this.exp = exp;
+    }
+
+    public boolean typeCheck(TypeNode r) {
+        Type t = exp.typeCheck();
+        IdNode id = exp.getExpIdNode();
+        if (t instanceof ErrorType) {
+            return false;
+        }
+
+        if (!(t instanceof IntType)) {
+            id.outputError("Arithmetic operator applied to non-numeric operand");
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
     /**
