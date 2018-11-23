@@ -973,10 +973,6 @@ class WriteStmtNode extends StmtNode {
         this.exp = exp;
     }
 
-    public boolean typeCheck () {
-
-    }
-
     /**
      * nameAnalysis
      * Given a symbol table symTab, perform name analysis on this node's child
@@ -1056,6 +1052,21 @@ class IfStmtNode extends StmtNode {
                                " in IfStmtNode.nameAnalysis");
             System.exit(-1);        
         }
+    }
+
+    // IF LPAREN exp:e RPAREN LCURLY varDeclList:vdl stmtList:sl RCURLY
+
+    public boolean typeCheck (TypeNode r) {
+        boolean result = true;
+        Type t = exp.typeCheck();
+        IdNode id = exp.getExpIdNode();
+         // Using a non-bool expression as the condition of an if.
+        if (t instanceof BoolType) {
+            id.outputError("Non-bool expression used as an if condition");
+            result = false;
+        }
+
+        return result && stmtList.typeCheck(r);
     }
     
     public void unparse(PrintWriter p, int indent) {
@@ -1301,6 +1312,7 @@ abstract class ExpNode extends ASTnode {
      * Default version for nodes with no names
      */
     public void nameAnalysis(SymTable symTab) { }
+   // abstract public IdNode getExpIdNode();
 }
 
 class IntLitNode extends ExpNode {
@@ -1309,6 +1321,19 @@ class IntLitNode extends ExpNode {
         this.charNum = charNum;
         this.intVal = intVal;
     }
+
+    // public IdNode getExpIdNode() {
+    //     IdNode id = new IdNode(lineNum, charNum, "int");
+    //     SemSym s = new SemSym(new IntType());
+    //     id.link(s);
+    //     return id;
+
+    // }
+
+    public Type typeCheck() {
+        return new IntType();
+    }
+
 
     public void unparse(PrintWriter p, int indent) {
         p.print(intVal);
@@ -1418,6 +1443,10 @@ class IdNode extends ExpNode {
         } else {
             link(sym);
         }
+    }
+
+    public void outputError(String msg) {
+        ErrMsg.fatal(lineNum, charNum, msg);
     }
     
     public void unparse(PrintWriter p, int indent) {
