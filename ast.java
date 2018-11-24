@@ -1,8 +1,6 @@
 import java.io.*;
 import java.util.*;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.IntType;
-import com.sun.tools.javac.code.Type.ErrorType;
 
 // **********************************************************************
 // The ASTnode class defines the nodes of the abstract-syntax tree that
@@ -1061,7 +1059,7 @@ class IfStmtNode extends StmtNode {
         Type t = exp.typeCheck();
         IdNode id = exp.getExpIdNode();
          // Using a non-bool expression as the condition of an if.
-        if (t instanceof BoolType) {
+        if (!(t instanceof BoolType)) {
             id.outputError("Non-bool expression used as an if condition");
             result = false;
         }
@@ -1131,6 +1129,19 @@ class IfElseStmtNode extends StmtNode {
             System.exit(-1);        
         }
     }
+
+    public boolean typeCheck (TypeNode r) {
+        boolean result = true;
+        Type t = exp.typeCheck();
+        IdNode id = exp.getExpIdNode();
+        // Using a non-bool expression as the condition of an if.
+        if (!(t instanceof BoolType)) {
+            id.outputError("Non-bool expression used as an if condition");
+            result = false;
+        }
+
+        return result && thenStmtList.typeCheck(r) && elseStmtList.typeCheck(r);
+    }
     
     public void unparse(PrintWriter p, int indent) {
         printSpace(p, indent);
@@ -1185,6 +1196,18 @@ class WhileStmtNode extends StmtNode {
             System.exit(-1);        
         }
     }
+
+    public boolean typeCheck (TypeNode r) {
+        boolean result = true;
+        Type t = exp.typeCheck();
+        IdNode id = exp.getExpIdNode();
+        // Using a non-bool expression as the condition of an if.
+        if (!(t instanceof BoolType)) {
+            id.outputError("Non-bool expression used as an if condition");
+            result = false;
+        }
+        return result && stmtList.typeCheck(r);
+    }
     
     public void unparse(PrintWriter p, int indent) {
         printSpace(p, indent);
@@ -1231,7 +1254,11 @@ class RepeatStmtNode extends StmtNode {
             System.exit(-1);        
         }
     }
-    
+
+    // repeat loop: Only integer expressions can be used in the times clause of an repeat statement
+    // @TODO: Write this later
+
+
     public void unparse(PrintWriter p, int indent) {
         printSpace(p, indent);
         p.print("repeat (");
@@ -1269,6 +1296,15 @@ class CallStmtNode extends StmtNode {
         p.println(";");
     }
 
+    public boolean typeCheck(TypeNode r) {
+        Type t = callExp.typeCheck();
+        IdNode id = callExp.getExpIdNode();
+        if (t instanceof ErrorType) {
+            return false;
+        }
+        else return true;
+    }
+
     // 1 kid
     private CallExpNode callExp;
 }
@@ -1287,6 +1323,39 @@ class ReturnStmtNode extends StmtNode {
         if (exp != null) {
             exp.nameAnalysis(symTab);
         }
+    }
+
+    public boolean typeCheck(TypeNode rTypeNode) {
+        Type rType = rTypeNode.type();  // get type of the function
+        if (exp == null) { // just return, without expression
+            if (!(rType instanceof VoidType)) { // non void funrtion with a plain return
+                ErrMsg.fatal(0,0,"Missing return value");
+                return false;
+            }
+            return true;
+        }
+        else { // have expression after return statement
+            Type t = exp.typeCheck();
+            IdNode id = exp.getExpIdNode();
+            //Returning a value from a void function.
+            if (rType instanceof VoidType) { // void function
+                id.outputError("Return with a value in a void function");
+                return false;
+            } else if (rType instanceof  ErrorType) {
+                return false;
+            }
+            else {
+
+                if (t.toString().equals(rType.toString())) {
+                    return true;
+                } else {
+                    //Returning a value of the wrong type from a non-void function.
+                    id.outputError(" Bad return value ");
+                    return false;
+                }
+            }
+        }
+
     }
 
     public void unparse(PrintWriter p, int indent) {
