@@ -1355,7 +1355,6 @@ class ReturnStmtNode extends StmtNode {
                 }
             }
         }
-
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -1381,7 +1380,7 @@ abstract class ExpNode extends ASTnode {
      * Default version for nodes with no names
      */
     public void nameAnalysis(SymTable symTab) { }
-   // abstract public IdNode getExpIdNode();
+    abstract public IdNode getExpIdNode();
 }
 
 class IntLitNode extends ExpNode {
@@ -1391,14 +1390,15 @@ class IntLitNode extends ExpNode {
         this.intVal = intVal;
     }
 
-    // public IdNode getExpIdNode() {
-    //     IdNode id = new IdNode(lineNum, charNum, "int");
-    //     SemSym s = new SemSym(new IntType());
-    //     id.link(s);
-    //     return id;
+    // get information for Integer Literal node
+     public IdNode getExpIdNode() {
+         IdNode id = new IdNode(lineNum, charNum, "int");
+         SemSym s = new SemSym(new IntType());
+         id.link(s);
+         return id;
+     }
 
-    // }
-
+     // pass IntType up the tree
     public Type typeCheck() {
         return new IntType();
     }
@@ -1420,6 +1420,19 @@ class StringLitNode extends ExpNode {
         this.strVal = strVal;
     }
 
+    // get information for String Literal Node
+    public IdNode getExpIdNode() {
+        IdNode id = new IdNode(lineNum, charNum, "string");
+        SemSym s = new SemSym(new IntType());
+        id.link(s);
+        return id;
+    }
+
+    // pass StringType up
+    public Type typeCheck() {
+        return new StringType();
+    }
+
     public void unparse(PrintWriter p, int indent) {
         p.print(strVal);
     }
@@ -1435,6 +1448,19 @@ class TrueNode extends ExpNode {
         this.charNum = charNum;
     }
 
+    // get information for TrueNode
+    public IdNode getExpIdNode() {
+        IdNode id = new IdNode(lineNum, charNum, "true");
+        SemSym s = new SemSym(new IntType());
+        id.link(s);
+        return id;
+    }
+
+    // pass true node up
+    public Type typeCheck() {
+        return new BoolType();
+    }
+
     public void unparse(PrintWriter p, int indent) {
         p.print("true");
     }
@@ -1447,6 +1473,19 @@ class FalseNode extends ExpNode {
     public FalseNode(int lineNum, int charNum) {
         this.lineNum = lineNum;
         this.charNum = charNum;
+    }
+
+    // get information for False Node
+    public IdNode getExpIdNode() {
+        IdNode id = new IdNode(lineNum, charNum, "false");
+        SemSym s = new SemSym(new IntType());
+        id.link(s);
+        return id;
+    }
+
+    // pass false node up
+    public Type typeCheck() {
+        return new BoolType();
     }
 
     public void unparse(PrintWriter p, int indent) {
