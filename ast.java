@@ -1381,6 +1381,7 @@ abstract class ExpNode extends ASTnode {
      */
     public void nameAnalysis(SymTable symTab) { }
     abstract public IdNode getExpIdNode();
+    abstract public Type typeCheck();
 }
 
 class IntLitNode extends ExpNode {
@@ -1393,7 +1394,7 @@ class IntLitNode extends ExpNode {
     // get information for Integer Literal node
      public IdNode getExpIdNode() {
          IdNode id = new IdNode(lineNum, charNum, "int");
-         SemSym s = new SemSym(new IntType());
+         Sym s = new Sym(new IntType());
          id.link(s);
          return id;
      }
@@ -1423,7 +1424,7 @@ class StringLitNode extends ExpNode {
     // get information for String Literal Node
     public IdNode getExpIdNode() {
         IdNode id = new IdNode(lineNum, charNum, "string");
-        SemSym s = new SemSym(new IntType());
+        Sym s = new Sym(new IntType());
         id.link(s);
         return id;
     }
@@ -1451,7 +1452,7 @@ class TrueNode extends ExpNode {
     // get information for TrueNode
     public IdNode getExpIdNode() {
         IdNode id = new IdNode(lineNum, charNum, "true");
-        SemSym s = new SemSym(new IntType());
+        Sym s = new Sym(new IntType());
         id.link(s);
         return id;
     }
@@ -1478,7 +1479,7 @@ class FalseNode extends ExpNode {
     // get information for False Node
     public IdNode getExpIdNode() {
         IdNode id = new IdNode(lineNum, charNum, "false");
-        SemSym s = new SemSym(new IntType());
+        Sym s = new Sym(new IntType());
         id.link(s);
         return id;
     }
@@ -1553,8 +1554,13 @@ class IdNode extends ExpNode {
         }
     }
 
+    // output error for the typeCheck
     public void outputError(String msg) {
         ErrMsg.fatal(lineNum, charNum, msg);
+    }
+
+    public Type typeCheck() {
+        return sym.getType();
     }
     
     public void unparse(PrintWriter p, int indent) {
@@ -1693,8 +1699,18 @@ class DotAccessExpNode extends ExpNode {
                 }
             }
         }
-    }    
-    
+    }
+
+    public IdNode getExpIdNode() {
+        return id;
+    }
+
+
+    // get type of struct type
+    public Type typeCheck() {
+        return id.sym().getType();
+    }
+
     public void unparse(PrintWriter p, int indent) {
         p.print("(");
         loc.unparse(p, 0);
@@ -1724,6 +1740,58 @@ class AssignNode extends ExpNode {
     public void nameAnalysis(SymTable symTab) {
         lhs.nameAnalysis(symTab);
         exp.nameAnalysis(symTab);
+    }
+
+    public IdNode getExpIdNode(){
+        return lhs.getExpIdNode();
+    }
+
+
+    public Type typeCheck() {
+        Type lType = lhs.typeCheck();
+        Type rType = exp.typeCheck();
+        IdNode id = lhs.getExpIdNode();
+        
+        //  Assigning a function to a function; e.g., "f = g;",
+        // where f and g are function names. 
+        if (lType instanceof FnType && rType instanceof FnType) {
+            id.outputError("Function assignment");
+            return new ErrorType();
+        }
+
+        // Assigning a struct name to a struct name; e.g., "A = B;",
+        // where A and B are the names of struct types. 
+        if (lType instanceof StructDefType && rType instanceof StructDefType) {
+            id.outputError("Struct name assignment");
+            return new ErrorType();
+        }
+
+        // Assigning a struct variable to a struct variable; e.g., "a = b;",
+        // where a and b are variables declared to be of struct types. 
+
+        if (lType instanceof StructType && rType instanceof StructType) {
+            id.outputError("Struct variable assignment");
+            return new ErrorType();
+        }
+
+        // if either left or right type is ErrorType
+        if (lType instanceof ErrorType || rType instanceof ErrorType) {
+            return new ErrorType();
+        } else {
+           // assigning a value of one type to a variable of another type
+           // (e.g., "j = true", where j is of type int). 
+           String lTypeString = lType.toString();
+           String rTypeString = rType.toString();
+           // the types of the left-hand side and right-hand side must be the same.
+           if (lTypeString.equals(rTypeString)) {
+                // The type of the result of applying the assignment
+                // operator is the type of the right-hand side.
+                return rType;
+           } else {
+               id.outputError("Type mismatch");
+               return new ErrorType();
+           }
+        }
     }
     
     public void unparse(PrintWriter p, int indent) {
