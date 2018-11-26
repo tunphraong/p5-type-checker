@@ -339,7 +339,7 @@ class ExpListNode extends ASTnode {
         }
     }
 
-    public List<ExpNode> getExpNode() {
+    public List<ExpNode> getFormalList() {
         return exps;
     }
     
@@ -1816,6 +1816,48 @@ class CallExpNode extends ExpNode {
     public CallExpNode(IdNode name) {
         id = name;
         expList = new ExpListNode(new LinkedList<ExpNode>());
+    }
+    
+    public IdNode getExpIdNode() {
+        return id;
+    }
+
+    
+    public Type typeCheck() {
+        boolean result = true;
+        Type idType = id.sym().getType(); // get type of the ID
+        if (!(idType instanceof FnType)) {
+            // Attempt to call a non-function
+            id.outputError("Attempt to call a non-function");
+            result = false;
+        } else {
+            // Calling a function with the wrong number of arguments
+            FnSym fs = (FnSym)id.sym(); // get sym of the id
+            List<Type> paramTypes = fs.getParamTypes();
+            List<ExpNode> formal = expList.getFormalList();
+            if (paramTypes.size() != formal.size()) {
+                id.outputError("Function call with wrong number of args");
+                result = false;
+            } else {
+            // Calling a function with an argument of the wrong type
+            int size = formal.size();
+            for (int i = 0; i < size; i++) {
+                Type callType = formal.get(i).typeCheck();
+                Type declType = paramTypes.get(i);
+                String callTypeString = callType.toString();
+                String declTypeString = declType.toString();
+                if (!(callTypeString.equals(declTypeString))) {
+                    // If there are several arguments with the wrong type,
+                    // you must give an error message for each such argument. 
+                    IdNode fId = formal.get(i).getExpIdNode();
+                    fId.outputError("Type of actual does not match type of formal");
+                    result = false;
+                }
+            }
+            }
+
+        // The number of actuals must match the number of formals.
+        }   
     }
 
     /**
