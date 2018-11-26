@@ -1562,6 +1562,10 @@ class IdNode extends ExpNode {
     public Type typeCheck() {
         return sym.getType();
     }
+
+    public IdNode getExpIdNode(){
+        return this;
+    }
     
     public void unparse(PrintWriter p, int indent) {
         p.print(strVal);
@@ -1857,7 +1861,12 @@ class CallExpNode extends ExpNode {
             }
 
         // The number of actuals must match the number of formals.
-        }   
+        }
+
+        if (idType instanceof FnType) 
+            return ((FnSym)(id.sym())).getReturnType();
+        else
+            return new ErrorType();
     }
 
     /**
