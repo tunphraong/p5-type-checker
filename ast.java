@@ -1906,6 +1906,12 @@ abstract class UnaryExpNode extends ExpNode {
     public void nameAnalysis(SymTable symTab) {
         exp.nameAnalysis(symTab);
     }
+
+    public IdNode getExpIdNode() {
+        return exp.getExpIdNode();
+    }
+
+
     
     // one child
     protected ExpNode exp;
@@ -1926,6 +1932,78 @@ abstract class BinaryExpNode extends ExpNode {
         exp1.nameAnalysis(symTab);
         exp2.nameAnalysis(symTab);
     }
+
+    public IdNode getExpIdNode() {
+        return exp1.getExpIdNode();
+    }
+
+    // check arithemtic opearators
+    protected Type checkArithmetic(ExpNode lExp, ExpNode rExp) {
+        boolean result = true;
+        Type lType = lExp.typeCheck();
+        Type rType = rExp.typeCheck();
+
+        // Applying an arithmetic operator (+, -, *, /) 
+        // to an operand with type other than int. 
+        if (!(lType instanceof ErrorType)) {
+            if (!(lType instanceof IntType)) {
+                IdNode id = lExp.getExpIdNode();
+                id.outputError("Arithmetic operator applied to non-numeric operand");
+                result = false;
+            }
+        } else result = false;
+   
+
+        if (!(rType instanceof ErrorType)) {
+            if (!(rType instanceof IntType)) {
+                IdNode id = lExp.getExpIdNode();
+                id.outputError("Arithmetic operator applied to non-numeric operand");
+                result = false;
+            }
+        } else result = false;
+
+        if (result == true) 
+            return new IntType();
+        else
+            return new ErrorType();
+        
+    }
+
+    // check logical of operators
+    protected Type checkLogical(ExpNode lExp, ExpNode rExp) {
+        boolean result = true;
+        Type lType = lExp.typeCheck();
+        Type rType = rExp.typeCheck();
+
+        // Applying a logical operator (!, &&, ||)
+        // to an operand with type other than bool.  
+        if (!(lType instanceof ErrorType)) {
+            if (!(lType instanceof BoolType)) {
+                IdNode id = lExp.getExpIdNode();
+                id.outputError("Logical operator applied to non-bool operand");
+                result = false;
+            }
+        } else result = false;
+   
+
+        if (!(rType instanceof ErrorType)) {
+            if (!(rType instanceof BoolType)) {
+                IdNode id = lExp.getExpIdNode();
+                id.outputError("Logical operator applied to non-bool operand");
+                result = false;
+            }
+        } else result = false;
+
+        if (result == true) 
+            return new BoolType();
+        else
+            return new ErrorType();
+    }
+
+
+    // check relation operators
+    
+
     
     // two kids
     protected ExpNode exp1;
