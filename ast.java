@@ -2108,6 +2108,19 @@ class UnaryMinusNode extends UnaryExpNode {
         super(exp);
     }
 
+    public Type typeCheck() {
+        Type t = exp.typeCheck();
+        IdNode id = exp.getExpIdNode();
+        if (t instanceof ErrorType) {
+            return new ErrorType();
+        } else if (!(t instanceof IntType)) {
+            //  Only integer expressions can be used for arithmetic
+            return new ErrorType(); 
+        } else {
+            return t;
+        }
+    }
+
     public void unparse(PrintWriter p, int indent) {
         p.print("(-");
         exp.unparse(p, 0);
