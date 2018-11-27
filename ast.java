@@ -2115,6 +2115,7 @@ class UnaryMinusNode extends UnaryExpNode {
             return new ErrorType();
         } else if (!(t instanceof IntType)) {
             //  Only integer expressions can be used for arithmetic
+            id.outputError("Arithmetic operator applied to non-numeric operand");
             return new ErrorType(); 
         } else {
             return t;
@@ -2131,6 +2132,20 @@ class UnaryMinusNode extends UnaryExpNode {
 class NotNode extends UnaryExpNode {
     public NotNode(ExpNode exp) {
         super(exp);
+    }
+
+    public Type typeCheck() {
+        Type t = exp.typeCheck();
+        IdNode id = exp.getExpIdNode();
+        if (t instanceof ErrorType) {
+            return new ErrorType();
+        } else if (!(t instanceof BoolType)) {
+            //  Only boolean expressions can be used
+            id.outputError("Logical operator applied to non-bool operand");
+            return new ErrorType(); 
+        } else {
+            return t;
+        }
     }
 
     public void unparse(PrintWriter p, int indent) {
