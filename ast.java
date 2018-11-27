@@ -2002,8 +2002,97 @@ abstract class BinaryExpNode extends ExpNode {
 
 
     // check relation operators
-    
+    //  The result of applying a relational operator to int operands is bool. 
+    protected Type checkRelation(ExpNode lExp, ExpNode rExp) {
+        boolean result = true;
+        Type lType = lExp.typeCheck();
+        Type rType = rExp.typeCheck();
 
+            
+        if (!(lType instanceof ErrorType)) {
+            if (!(lType instanceof IntType)) {
+                IdNode id = lExp.getExpIdNode();
+                id.outputError("Relational operator applied to non-numeric operand");
+                result = false;
+            }
+        } else result = false;
+   
+
+        if (!(rType instanceof ErrorType)) {
+            if (!(rType instanceof IntType)) {
+                IdNode id = lExp.getExpIdNode();
+                id.outputError("Relational operator applied to non-numeric operand");
+                result = false;
+            }
+        } else result = false;
+
+        if (result == true) 
+            return new IntType();
+        else
+            return new ErrorType();
+    }
+    // TODO: check Equality
+    // check equality
+    // Only integer or boolean expressions can be used as operands of these operators
+    // Furthermore, the types of both operands must be the same
+    protected Type checkEquality(ExpNode lExp, ExpNode rExp) {
+        // boolean result = true;
+        Type lType = lExp.typeCheck();
+        Type rType = rExp.typeCheck();
+        IdNode id = lExp.getExpIdNode();
+
+        // Applying an equality operator (==, !=) to void function
+        // operands (e.g., "f() == g()",
+        // where f and g are functions whose return type is void). 
+
+        if (lType instanceof VoidType && rType instanceof VoidType) {
+            id.outputError("Equality operator applied to void functions");
+            return new ErrorType();
+        }
+
+        //Comparing two functions for equality, 
+        // e.g., "f == g" or "f != g",
+        // where f and g are function names. 
+
+        if (lType instanceof FnType && rType instanceof FnType) {
+            id.outputError("Equality operator applied to functions");
+            return new ErrorType();
+        }
+
+        // Comparing two struct names for equality, 
+        // e.g., "A == B" or "A != B", 
+        // where A and B are the names of struct types. 
+
+        if (lType instanceof StructDefType && rType instanceof StructDefType) {
+            id.outputError("Equality operator applied to struct names");
+            return new ErrorType();
+        }
+
+        // Comparing two struct variables for equality, 
+        //e.g., "a == b" or "a != b",
+        // where a and a are variables declared to be of struct types. 
+
+        if (lType instanceof StructType && rType instanceof StructType) {
+            id.outputError("Equality operator applied to struct variables");
+            return new ErrorType();
+        }
+
+        // check for errorType
+        if (lType instanceof ErrorType || rType instanceof ErrorType) {
+            return new ErrorType();
+        } else {
+            // Furthermore, the types of both operands must be the same. 
+            String lTypeString = lType.toString();
+            String rTypeString = rType.toString();
+            if (lTypeString.equals(rTypeString)) {
+                // The result of applying an equality operator is bool.
+                return new BoolType();
+            } else {
+                id.outputError("Type mismatch");
+                return new ErrorType();
+            }
+        }
+    }
     
     // two kids
     protected ExpNode exp1;
