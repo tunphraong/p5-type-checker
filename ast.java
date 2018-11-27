@@ -1234,7 +1234,17 @@ class RepeatStmtNode extends StmtNode {
     }
 
     // TODO: Write typecheck for repeat
-    
+    public boolean typeCheck (TypeNode r) {
+        boolean result = true;
+        Type t = exp.typeCheck();
+        IdNode id = exp.getExpIdNode();
+        // Using a non-bool expression as the condition of an if.
+        if (!(t instanceof IntType)) {
+            id.outputError("Non-integer expression used as a repeat clause");
+            result = false;
+        }
+        return result && stmtList.typeCheck(r);
+    }
     /**
      * nameAnalysis
      * Given a symbol table symTab, do:
