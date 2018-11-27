@@ -2164,6 +2164,10 @@ class PlusNode extends BinaryExpNode {
         super(exp1, exp2);
     }
 
+    public Type typeCheck() {
+        return checkArithmetic(exp1, exp2);
+    }
+
     public void unparse(PrintWriter p, int indent) {
         p.print("(");
         exp1.unparse(p, 0);
@@ -2176,6 +2180,10 @@ class PlusNode extends BinaryExpNode {
 class MinusNode extends BinaryExpNode {
     public MinusNode(ExpNode exp1, ExpNode exp2) {
         super(exp1, exp2);
+    }
+
+    public Type typeCheck() {
+        return checkArithmetic(exp1, exp2); // arithmetic type
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -2192,6 +2200,10 @@ class TimesNode extends BinaryExpNode {
         super(exp1, exp2);
     }
 
+    public Type typeCheck() {
+        return checkArithmetic(exp1, exp2); // arithmetic type
+    }
+
     public void unparse(PrintWriter p, int indent) {
         p.print("(");
         exp1.unparse(p, 0);
@@ -2204,6 +2216,10 @@ class TimesNode extends BinaryExpNode {
 class DivideNode extends BinaryExpNode {
     public DivideNode(ExpNode exp1, ExpNode exp2) {
         super(exp1, exp2);
+    }
+
+    public Type typeCheck() {
+        return checkArithmetic(exp1, exp2); // arithmetic type
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -2220,6 +2236,10 @@ class AndNode extends BinaryExpNode {
         super(exp1, exp2);
     }
 
+    public Type typeCheck() {
+        return checkLogical(exp1, exp2); // logical
+    }
+
     public void unparse(PrintWriter p, int indent) {
         p.print("(");
         exp1.unparse(p, 0);
@@ -2232,6 +2252,10 @@ class AndNode extends BinaryExpNode {
 class OrNode extends BinaryExpNode {
     public OrNode(ExpNode exp1, ExpNode exp2) {
         super(exp1, exp2);
+    }
+
+    public Type typeCheck() {
+        return checkLogical(exp1, exp2); // logical
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -2248,6 +2272,11 @@ class EqualsNode extends BinaryExpNode {
         super(exp1, exp2);
     }
 
+    // equality
+    public Type typeCheck() {
+        return checkEquality(exp1, exp2);
+    }
+
     public void unparse(PrintWriter p, int indent) {
         p.print("(");
         exp1.unparse(p, 0);
@@ -2260,6 +2289,11 @@ class EqualsNode extends BinaryExpNode {
 class NotEqualsNode extends BinaryExpNode {
     public NotEqualsNode(ExpNode exp1, ExpNode exp2) {
         super(exp1, exp2);
+    }
+
+    // equality
+    public Type typeCheck() {
+        return checkEquality(exp1, exp2);
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -2276,6 +2310,11 @@ class LessNode extends BinaryExpNode {
         super(exp1, exp2);
     }
 
+    // relational
+    public Type typeCheck() {
+        return checkRelation(exp1, exp2);
+    }
+
     public void unparse(PrintWriter p, int indent) {
         p.print("(");
         exp1.unparse(p, 0);
@@ -2288,6 +2327,11 @@ class LessNode extends BinaryExpNode {
 class GreaterNode extends BinaryExpNode {
     public GreaterNode(ExpNode exp1, ExpNode exp2) {
         super(exp1, exp2);
+    }
+
+     // relational
+     public Type typeCheck() {
+        return checkRelation(exp1, exp2);
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -2304,6 +2348,11 @@ class LessEqNode extends BinaryExpNode {
         super(exp1, exp2);
     }
 
+    // relational
+    public Type typeCheck() {
+        return checkRelation(exp1, exp2);
+    }
+
     public void unparse(PrintWriter p, int indent) {
         p.print("(");
         exp1.unparse(p, 0);
@@ -2316,6 +2365,11 @@ class LessEqNode extends BinaryExpNode {
 class GreaterEqNode extends BinaryExpNode {
     public GreaterEqNode(ExpNode exp1, ExpNode exp2) {
         super(exp1, exp2);
+    }
+
+    // relational
+    public Type typeCheck() {
+        return checkRelation(exp1, exp2);
     }
 
     public void unparse(PrintWriter p, int indent) {
