@@ -1232,6 +1232,8 @@ class RepeatStmtNode extends StmtNode {
         declList = dlist;
         stmtList = slist;
     }
+
+    // TODO: Write typecheck for repeat
     
     /**
      * nameAnalysis
@@ -1298,7 +1300,6 @@ class CallStmtNode extends StmtNode {
 
     public boolean typeCheck(TypeNode r) {
         Type t = callExp.typeCheck();
-        IdNode id = callExp.getExpIdNode();
         if (t instanceof ErrorType) {
             return false;
         }
@@ -1956,7 +1957,7 @@ abstract class BinaryExpNode extends ExpNode {
 
         if (!(rType instanceof ErrorType)) {
             if (!(rType instanceof IntType)) {
-                IdNode id = lExp.getExpIdNode();
+                IdNode id = rExp.getExpIdNode();
                 id.outputError("Arithmetic operator applied to non-numeric operand");
                 result = false;
             }
@@ -1988,7 +1989,7 @@ abstract class BinaryExpNode extends ExpNode {
 
         if (!(rType instanceof ErrorType)) {
             if (!(rType instanceof BoolType)) {
-                IdNode id = lExp.getExpIdNode();
+                IdNode id = rExp.getExpIdNode();
                 id.outputError("Logical operator applied to non-bool operand");
                 result = false;
             }
@@ -2020,7 +2021,7 @@ abstract class BinaryExpNode extends ExpNode {
 
         if (!(rType instanceof ErrorType)) {
             if (!(rType instanceof IntType)) {
-                IdNode id = lExp.getExpIdNode();
+                IdNode id = rExp.getExpIdNode();
                 id.outputError("Relational operator applied to non-numeric operand");
                 result = false;
             }
