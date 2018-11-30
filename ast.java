@@ -1056,8 +1056,8 @@ class IfStmtNode extends StmtNode {
 
     public boolean typeCheck (TypeNode r) {
         boolean result = true;
-        Type t = exp.typeCheck();
-        IdNode id = exp.getExpIdNode();
+        Type t = this.exp.typeCheck();
+        IdNode id = this.exp.getExpIdNode();
          // Using a non-bool expression as the condition of an if.
         if (!(t instanceof BoolType)) {
             id.outputError("Non-bool expression used as an if condition");
@@ -2038,7 +2038,7 @@ abstract class BinaryExpNode extends ExpNode {
         } else result = false;
 
         if (result == true) 
-            return new IntType();
+            return new BoolType();
         else
             return new ErrorType();
     }
