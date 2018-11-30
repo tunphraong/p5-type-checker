@@ -1,0 +1,115 @@
+struct let {
+    int a; // test struct has different symTable
+    int b;
+};
+
+struct chesse {
+    struct let l; // test struct inside struct
+    bool d;
+};
+
+struct beer {
+    struct chesse c; 
+    int z;
+};
+
+# TSET RETURN int
+int func_1(int a, bool b) {
+    return 0;
+}
+
+# TEST RETURN BOOL
+bool func_2() {
+    return false;
+}
+
+# TEST RETURN void
+void func_3() {
+    int a;
+    a = 1 + 1;
+}
+
+int main() {
+
+    // test declare struct variables
+    struct let l;
+    struct chesse c;
+   
+    int x;
+    int y;
+    bool a;
+    bool b;
+    # test assign
+    x = 2;
+    y = 3;
+    a = false;
+    b = true;
+    # TEST ARITHMETIC
+    x = 1 + 1;
+    x = y -x;
+    x = y * 1;
+    x = y/1;
+    x = -y;
+    x++;
+    x--;
+    # TEST LOGICAL
+    if (!b) {
+        b = !b;
+        if (a && b) {
+            b = a;
+            if (a || b) {
+                # TEST EQUALITY
+                // for int
+                if (x == y) { #EQUAL
+                    if (x != y)  {
+                        // for bool
+                        if (a == b) {
+                            if (a != b) { # NOT EQUAL
+                                a = b;
+                            }
+                        }
+                    }
+                   
+                    
+                }
+            }
+        }
+    }
+
+    # TEST RELATIONAL
+    if (x > y) {
+        if (y < x) {
+            x = y;
+        } else {
+            y = x;
+            if (x <= y) {
+                y = x;
+                if (x >= y) {
+                    x = y;
+                }
+            }
+        }
+    }
+
+    # TEST REPEAT
+    repeat (x) {
+        # TEST cout
+        cout <<  x;
+        cout << b;
+        cout << "ABC";
+        # TEST cin
+        cin >> x; // int
+        cin >> b;
+        cin >> c.d; //  // cin inside struct
+        cin >> l.a;
+    }
+
+    # TEST FUNCTION
+    func_1(x,a);
+    func_2(); // no arg
+
+    # TEST return
+    return 1 + 10 + 100 + x;
+
+
+}
