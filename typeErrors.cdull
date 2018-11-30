@@ -1,0 +1,150 @@
+struct let {
+    int a; // test struct has different symTable
+    int b;
+};
+
+struct chesse {
+    struct let l; // test struct inside struct
+    bool d;
+};
+
+struct beer {
+    struct chesse c; 
+    int z;
+};
+
+## TEST RETURN
+#  Returning a value of the wrong type from a non-void function. 
+int func_1(int a, bool b) {
+    return false;
+}
+
+#  Returning a value of the wrong type from a non-void function. 
+bool func_2() {
+    return 3;
+}
+
+#  Returning a value from a void function. 
+void func_3() {
+    int a;
+    a = 1 + 1;
+    return 3;
+}
+
+void f() {
+}
+
+void g() {
+
+}
+
+# PLAIN Returning
+int func_4() {
+    return;
+}
+
+int main() {
+
+    struct let l;
+    struct chesse c;
+    int x;
+    int y;
+    bool a;
+    bool b;
+    
+
+    # TEST TYPE MISMATCH
+    x = 2;
+    y = 3;
+    a = false;
+    b = 3;
+    c.d = 100;
+    if (a != x) {}
+    if (x == a) {}
+
+    # EQUALITY FOR void
+    if (f() == g()) {}
+    while (g() != f()) {}
+
+    # TWO FUNCTIONS FOR EQUALITY
+    if (f == g) {}
+    
+    # TWO STRUCTS FOR EQUALITY
+    if (l == c) {}
+    if (let == chesse) {}
+
+    # FUNCTION ASSIGNMENT
+    f = g;
+
+    # STRUCT ASSIGNMENT
+    let = chesse;
+    l = c;
+
+
+
+    # TEST COUT
+    cout << func_1;
+    cout << l;
+    cout << let;
+    cout << f();
+   # TEST CIN
+   cin >> func_4;
+   cin >> let;
+   cin >> l;
+
+    # NON BOOL CONDITION OF if
+    if (3) {
+    }
+
+    # NON BOOL CONDITION OF WHILE
+    while (x) { 
+    }
+
+    
+
+    # TEST inside a while loop
+    while (x > y) {
+        # TEST LOGICAL
+        if (!3) {
+        }
+        if (100 && 10) {
+        }
+        if (3 || 5) { 
+        }
+        # TEST RELATIONAL
+        if (false > true){}
+        if (true < 3) {}
+        if (false >= 5) {}
+        if (true <= false) {}
+    }
+
+    # TEST Arithemtic
+    x = b + 1;
+    y = a - 1;
+    x = a * b;
+    x = a / b;
+    b++;
+    a--;
+
+
+
+    # TEST REPEAT
+    # NON INT FOR EXPRESSION
+    repeat (b) {
+       
+    }
+
+    # TEST FUNCTION
+    ## CALL SOMETHING THAT IS NOT A FUNC
+    x();
+
+    ## CALL FUNC WITH WRONG # OF ARGUMENT
+    func_1(a,b,x);
+ 
+    ## Wrong argument type
+    func_1(b,x);
+
+
+    # TEST return
+    return 1 + 10 + 100 + x;
+}

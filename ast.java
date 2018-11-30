@@ -1203,7 +1203,7 @@ class WhileStmtNode extends StmtNode {
         IdNode id = exp.getExpIdNode();
         // Using a non-bool expression as the condition of an if.
         if (!(t instanceof BoolType)) {
-            id.outputError("Non-bool expression used as an if condition");
+            id.outputError("Non-bool expression used as an while     condition");
             result = false;
         }
         return result && stmtList.typeCheck(r);
